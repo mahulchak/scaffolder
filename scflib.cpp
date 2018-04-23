@@ -168,21 +168,17 @@ void innieChecker(asmMerge & merge)
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////
-void fillSeq(fastaSeq & fasta, ifstream& fin) 
+void fillSeq(fastaSeq & fasta, ifstream& fin)
 {
-        string str,str1;
-        
-        while(getline(fin,str))
-        {
-                if(str[0] == '>')
-                {       
-                        fasta.seqName.push_back(str);
-//cout<<str<<endl;
-                }
-                getline(fin,str1);
-                fasta.seq[str.substr(1)] = str1; //fasta.seq[str.substr(1)] = str1 needed to remove leading >
-	
-        }
+  string str,header,sequence;
+  while(getline(fin,str,'>')){
+    int newLine = str.find('\n');
+    header = str.substr(0,newLine);
+    sequence = str.substr(newLine + 1, str.length() - newLine - 2);
+    sequence.erase(remove(sequence.begin(),sequence.end(),'\n'),sequence.end());
+    fasta.seqName.push_back(header);
+    fasta.seq[header] = sequence;
+  }
 }
 /////////////////////////////////////////////////////////////////////////
 void joinList(asmMerge & merge, fastaSeq & genome, char c)
